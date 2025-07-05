@@ -49,7 +49,7 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
     {
-        position.Y += e.Action switch
+        velocity.Y += e.Action switch
         {
             OsuMusumeAction.Up => -1,
             OsuMusumeAction.Down => 1,
@@ -61,7 +61,7 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
     public void OnReleased(KeyBindingReleaseEvent<OsuMusumeAction> e)
     {
-        position.Y -= e.Action switch
+        velocity.Y -= e.Action switch
         {
             OsuMusumeAction.Up => -1,
             OsuMusumeAction.Down => 1,
