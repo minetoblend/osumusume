@@ -7,7 +7,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Game.Tests.Visual;
 using osuTK.Graphics;
 
-namespace osu.Game.Rulesets.UmaMusume.Tests
+namespace osu.Game.Rulesets.OsuMusume.Tests
 {
     public partial class TestSceneOsuGame : OsuTestScene
     {

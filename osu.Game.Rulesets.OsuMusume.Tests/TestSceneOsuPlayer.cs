@@ -2,10 +2,9 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using NUnit.Framework;
-using osu.Game.Rulesets.OsuMusume;
 using osu.Game.Tests.Visual;
 
-namespace osu.Game.Rulesets.UmaMusume.Tests
+namespace osu.Game.Rulesets.OsuMusume.Tests
 {
     [TestFixture]
     public partial class TestSceneOsuPlayer : PlayerTestScene

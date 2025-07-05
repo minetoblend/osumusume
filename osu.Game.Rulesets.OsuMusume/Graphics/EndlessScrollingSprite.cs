@@ -4,19 +4,17 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
+using osu.Game.Rulesets.OsuMusume.UI;
 using osu.Game.Rulesets.UI.Scrolling;
 using osu.Game.Rulesets.UI.Scrolling.Algorithms;
-using osu.Game.Rulesets.OsuMusume.UI;
 
-namespace osu.Game.Rulesets.OsuMusume.Scenery;
+namespace osu.Game.Rulesets.OsuMusume.Graphics;
 
-public partial class HorizontalScrollingSprite : CompositeDrawable
+public partial class EndlessScrollingSprite : CompositeDrawable
 {
     public required Texture Texture { get; init; }
 
     public RectangleF? TextureRect { get; set; }
-
-    private Sprite sprite1, sprite2;
 
     [Resolved]
     private IScrollingInfo scrollingInfo { get; set; } = null;

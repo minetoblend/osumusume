@@ -2,6 +2,7 @@
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Textures;
+using osu.Game.Rulesets.OsuMusume.Graphics;
 using osuTK;
 
 namespace osu.Game.Rulesets.OsuMusume.Scenery;
@@ -18,7 +19,7 @@ public partial class RaceTrack : CompositeDrawable
 
         for (int i = 0; i < 7; i++)
         {
-            AddInternal(new HorizontalScrollingSprite
+            AddInternal(new EndlessScrollingSprite
             {
                 Texture = textures.Get($"grass_lane_{((i + 1) % 4) + 1}"),
                 RelativeSizeAxes = Axes.X,
@@ -29,7 +30,7 @@ public partial class RaceTrack : CompositeDrawable
         }
 
         AddRangeInternal([
-            new HorizontalScrollingSprite
+            new EndlessScrollingSprite
             {
                 Texture = textures.Get("dirt"),
                 RelativeSizeAxes = Axes.X,
@@ -38,7 +39,7 @@ public partial class RaceTrack : CompositeDrawable
                 ScrollSpeed = 1.05f,
                 Depth = 1,
             },
-            new HorizontalScrollingSprite
+            new EndlessScrollingSprite
             {
                 Texture = textures.Get("dirt"),
                 RelativeSizeAxes = Axes.X,
@@ -49,7 +50,7 @@ public partial class RaceTrack : CompositeDrawable
                 Origin = Anchor.BottomLeft,
                 Scale = new Vector2(1, 0.5f)
             },
-            new HorizontalScrollingSprite
+            new EndlessScrollingSprite
             {
                 Texture = textures.Get("barrier_top"),
                 RelativeSizeAxes = Axes.X,
@@ -59,7 +60,7 @@ public partial class RaceTrack : CompositeDrawable
                 ScrollSpeed = 0.9f,
                 Y = 1,
             },
-            new HorizontalScrollingSprite
+            new EndlessScrollingSprite
             {
                 Texture = textures.Get("barrier_bottom"),
                 RelativeSizeAxes = Axes.X,

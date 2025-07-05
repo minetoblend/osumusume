@@ -3,16 +3,14 @@
 
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Animations;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Rendering;
-using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
-using osu.Game.Rulesets.UI.Scrolling;
+using osu.Game.Rulesets.OsuMusume.Graphics;
 using osu.Game.Rulesets.OsuMusume.Scenery;
-using osuTK;
+using osu.Game.Rulesets.UI.Scrolling;
 
 namespace osu.Game.Rulesets.OsuMusume.UI
 {
@@ -54,32 +52,7 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                         new HitArea(),
                         ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
                         HitObjectContainer,
-                        new Container
-                        {
-                            AutoSizeAxes = Axes.Both,
-                            Anchor = Anchor.CentreLeft,
-                            Origin = Anchor.CentreLeft,
-                            X = -50,
-                            Scale = new Vector2(0.75f),
-                            Children =
-                            [
-                                new DrawableAnimation
-                                {
-                                    Anchor = Anchor.BottomCentre,
-                                    Origin = Anchor.Centre,
-                                }.With(a =>
-                                {
-                                    for (int i = 0; i < 8; i++)
-                                    {
-                                        a.AddFrame(new Sprite
-                                        {
-                                            Texture = textures.Get($"special_week_{i + 1}"),
-                                            X = i % 4 == 2 ? 2 : i % 2 == 1 ? 1 : 0
-                                        }, 80);
-                                    }
-                                })
-                            ]
-                        }
+                        new PlayerCharacter(Character.SpecialWeek)
                     ],
                 }
             });

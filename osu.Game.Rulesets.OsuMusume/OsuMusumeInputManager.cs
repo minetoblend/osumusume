@@ -17,10 +17,10 @@ namespace osu.Game.Rulesets.OsuMusume
 
     public enum OsuMusumeAction
     {
-        [Description("Button 1")]
-        Button1,
+        [Description("Move Up")]
+        Up,
 
-        [Description("Button 2")]
-        Button2,
+        [Description("Move Down")]
+        Down,
     }
 }

@@ -41,8 +41,8 @@ namespace osu.Game.Rulesets.OsuMusume
 
         public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) => new[]
         {
-            new KeyBinding(InputKey.Z, OsuMusumeAction.Button1),
-            new KeyBinding(InputKey.X, OsuMusumeAction.Button2),
+            new KeyBinding(InputKey.W, OsuMusumeAction.Up),
+            new KeyBinding(InputKey.S, OsuMusumeAction.Down),
         };
 
         public override Drawable CreateIcon() => new OsuMusumeRulesetIcon(this);

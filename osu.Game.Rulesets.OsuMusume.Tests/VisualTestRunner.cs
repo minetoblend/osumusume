@@ -6,7 +6,7 @@ using osu.Framework;
 using osu.Framework.Platform;
 using osu.Game.Tests;
 
-namespace osu.Game.Rulesets.UmaMusume.Tests
+namespace osu.Game.Rulesets.OsuMusume.Tests
 {
     public static class VisualTestRunner
     {
