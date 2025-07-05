@@ -16,7 +16,7 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
     private Vector2 position;
     private Vector2 velocity;
 
-    private DrawableCharacter character;
+    private readonly DrawableCharacter character;
 
     [Resolved]
     private IScrollingInfo scrollingInfo { get; set; }
@@ -42,9 +42,11 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
         character.AnimationRate = float.Clamp(rate, 0.5f, 1.5f);
 
-        position = Vector2.Clamp(position + velocity * (float)Time.Elapsed * 0.2f, Vector2.Zero, new Vector2(0, 130));
+        position = Vector2.Clamp(position + velocity * (float)Time.Elapsed * 0.1f, Vector2.Zero, new Vector2(0, 130));
 
-        character.Position = Vector2.Lerp(position, character.Position, (float)Math.Exp(-0.02f * Time.Elapsed));
+        var skewedPosition = position + new Vector2(position.Y * -0.4f, 0);
+
+        character.Position = Vector2.Lerp(skewedPosition, character.Position, (float)Math.Exp(-0.02f * Time.Elapsed));
     }
 
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
