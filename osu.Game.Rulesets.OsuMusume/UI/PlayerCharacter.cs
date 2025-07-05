@@ -46,9 +46,7 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
         position = Vector2.Clamp(position + velocity * movementSpeed * (float)Time.Elapsed, Vector2.Zero, new Vector2(64, 130));
 
-        var skewedPosition = position + new Vector2(position.Y * -0.4f, 0);
-
-        character.Position = Vector2.Lerp(skewedPosition, character.Position, (float)Math.Exp(-0.02f * Time.Elapsed));
+        character.Position = Vector2.Lerp(position, character.Position, (float)Math.Exp(-0.02f * Time.Elapsed));
     }
 
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)

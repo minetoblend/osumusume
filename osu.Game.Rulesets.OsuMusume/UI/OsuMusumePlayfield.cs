@@ -9,7 +9,6 @@ using osu.Framework.Graphics.Textures;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
 using osu.Game.Rulesets.OsuMusume.Graphics;
-using osu.Game.Rulesets.OsuMusume.Scenery;
 using osu.Game.Rulesets.UI.Scrolling;
 
 namespace osu.Game.Rulesets.OsuMusume.UI
@@ -40,28 +39,39 @@ namespace osu.Game.Rulesets.OsuMusume.UI
 
             dependencies.CacheAs(textures);
 
-            AddRangeInternal(new Drawable[]
+            Container content;
+            Container offsetContent;
+
+            AddInternal(content = new Container
             {
-                new RaceTrack(),
-                new Container
+                RelativeSizeAxes = Axes.X,
+                Y = 100,
+                Height = 140,
+            });
+
+            for (int i = 0; i < 7; i++)
+            {
+                content.Add(new EndlessScrollingSprite
                 {
+                    Texture = textures.Get($"grass_lane_{((i + 1) % 4) + 1}"),
                     RelativeSizeAxes = Axes.X,
-                    Y = 100,
-                    Height = 120,
-                    X = 100,
-                    Children =
-                    [
-                        new HitArea(),
-                        ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
-                        new Container
-                        {
-                            RelativeSizeAxes = Axes.Both,
-                            Y = ROW_HEIGHT / 2,
-                            Child = HitObjectContainer,
-                        },
-                        new PlayerCharacter(Character.SpecialWeek)
-                    ],
-                }
+                    Height = 24,
+                    Y = i * 20,
+                    ScrollSpeed = 0.9f + (i / 6f) * 0.15f
+                });
+            }
+
+            content.Add(new Container
+            {
+                RelativeSizeAxes = Axes.Both,
+                X = 100,
+                Children =
+                [
+                    ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
+                    HitObjectContainer,
+                    new HitArea(),
+                    new PlayerCharacter(Character.SpecialWeek),
+                ]
             });
         }
     }

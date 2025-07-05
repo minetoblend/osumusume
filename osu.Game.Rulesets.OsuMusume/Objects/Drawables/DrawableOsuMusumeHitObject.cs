@@ -68,13 +68,6 @@ namespace osu.Game.Rulesets.OsuMusume.Objects.Drawables
             playfield.ShadowLayer.Add(shadowProxy = shadow.CreateProxy());
         }
 
-        protected override void Update()
-        {
-            base.Update();
-
-            content.X = DrawPosition.Y * -0.4f;
-        }
-
         protected override void CheckForResult(bool userTriggered, double timeOffset)
         {
             if (timeOffset >= 0)

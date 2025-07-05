@@ -2,7 +2,7 @@
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Textures;
 using osu.Game.Rulesets.UI.Scrolling;
 
@@ -18,17 +18,17 @@ public partial class HitArea : CompositeDrawable
 
     public HitArea()
     {
-        RelativeSizeAxes = Axes.Both;
+        Origin = Anchor.TopCentre;
+        Width = 20;
+        RelativeSizeAxes = Axes.Y;
     }
 
     [BackgroundDependencyLoader]
     private void load(TextureStore textures)
     {
-        InternalChild = new Sprite
+        InternalChild = new Box
         {
-            Texture = textures.Get("hitarea"),
-            Origin = Anchor.TopRight,
-            X = 10,
+            RelativeSizeAxes = Axes.Both,
             Alpha = 0.05f,
             Blending = BlendingParameters.Additive,
         };
