@@ -17,6 +17,8 @@ namespace osu.Game.Rulesets.OsuMusume.UI
     [Cached]
     public partial class OsuMusumePlayfield : ScrollingPlayfield
     {
+        public const float ROW_HEIGHT = 20;
+
         private DependencyContainer dependencies = null!;
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) =>
@@ -45,13 +47,18 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 {
                     RelativeSizeAxes = Axes.X,
                     Y = 100,
-                    Height = 140,
+                    Height = 120,
                     X = 100,
                     Children =
                     [
                         new HitArea(),
                         ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
-                        HitObjectContainer,
+                        new Container
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Y = ROW_HEIGHT / 2,
+                            Child = HitObjectContainer,
+                        },
                         new PlayerCharacter(Character.SpecialWeek)
                     ],
                 }

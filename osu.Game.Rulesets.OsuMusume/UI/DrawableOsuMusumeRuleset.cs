@@ -28,7 +28,7 @@ namespace osu.Game.Rulesets.OsuMusume.UI
             : base(ruleset, beatmap, mods)
         {
             Direction.Value = ScrollingDirection.Left;
-            TimeRange.Value = 3000;
+            TimeRange.Value = 5000;
             VisualisationMethod = ScrollVisualisationMethod.Overlapping;
 
             if (beatmap.HitObjects.Count > 0)

@@ -16,6 +16,8 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
     private Vector2 position;
     private Vector2 velocity;
 
+    private readonly Vector2 movementSpeed = new Vector2(0, 0.1f);
+
     private readonly DrawableCharacter character;
 
     [Resolved]
@@ -42,7 +44,7 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
         character.AnimationRate = float.Clamp(rate, 0.5f, 1.5f);
 
-        position = Vector2.Clamp(position + velocity * (float)Time.Elapsed * 0.1f, Vector2.Zero, new Vector2(0, 130));
+        position = Vector2.Clamp(position + velocity * movementSpeed * (float)Time.Elapsed, Vector2.Zero, new Vector2(64, 130));
 
         var skewedPosition = position + new Vector2(position.Y * -0.4f, 0);
 
@@ -51,10 +53,12 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
     {
-        velocity.Y += e.Action switch
+        velocity += e.Action switch
         {
-            OsuMusumeAction.Up => -1,
-            OsuMusumeAction.Down => 1,
+            OsuMusumeAction.Up => new Vector2(0, -1),
+            OsuMusumeAction.Down => new Vector2(0, 1),
+            OsuMusumeAction.Left => new Vector2(-1, 0),
+            OsuMusumeAction.Right => new Vector2(1, 0),
             _ => throw new ArgumentOutOfRangeException()
         };
 
@@ -63,10 +67,12 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
     public void OnReleased(KeyBindingReleaseEvent<OsuMusumeAction> e)
     {
-        velocity.Y -= e.Action switch
+        velocity -= e.Action switch
         {
-            OsuMusumeAction.Up => -1,
-            OsuMusumeAction.Down => 1,
+            OsuMusumeAction.Up => new Vector2(0, -1),
+            OsuMusumeAction.Down => new Vector2(0, 1),
+            OsuMusumeAction.Left => new Vector2(-1, 0),
+            OsuMusumeAction.Right => new Vector2(1, 0),
             _ => throw new ArgumentOutOfRangeException()
         };
     }

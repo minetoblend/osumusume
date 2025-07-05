@@ -42,7 +42,9 @@ namespace osu.Game.Rulesets.OsuMusume
         public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) => new[]
         {
             new KeyBinding(InputKey.W, OsuMusumeAction.Up),
+            new KeyBinding(InputKey.A, OsuMusumeAction.Left),
             new KeyBinding(InputKey.S, OsuMusumeAction.Down),
+            new KeyBinding(InputKey.D, OsuMusumeAction.Right),
         };
 
         public override Drawable CreateIcon() => new OsuMusumeRulesetIcon(this);
