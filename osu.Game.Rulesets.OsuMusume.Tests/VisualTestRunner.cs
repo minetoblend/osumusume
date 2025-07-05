@@ -13,7 +13,7 @@ namespace osu.Game.Rulesets.OsuMusume.Tests
         [STAThread]
         public static int Main(string[] args)
         {
-            using (DesktopGameHost host = Host.GetSuitableDesktopHost(@"umamusume"))
+            using (DesktopGameHost host = Host.GetSuitableDesktopHost(@"osumusume"))
             {
                 host.Run(new OsuTestBrowser());
                 return 0;
