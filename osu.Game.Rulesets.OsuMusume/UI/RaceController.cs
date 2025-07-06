@@ -4,7 +4,10 @@ using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Textures;
 using osu.Game.Rulesets.OsuMusume.Graphics;
+using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.UI.Scrolling;
 using osu.Game.Rulesets.UI.Scrolling.Algorithms;
 using osuTK;
@@ -27,8 +30,11 @@ public partial class RaceController : CompositeDrawable
     private IScrollAlgorithm scrollAlgorithm => scrollingInfo.Algorithm.Value;
     private double timeRange => scrollingInfo.TimeRange.Value;
 
+    [Resolved]
+    private OsuMusumePlayfield playfield { get; set; }
+
     [BackgroundDependencyLoader]
-    private void load()
+    private void load(TextureStore textures)
     {
         RelativeSizeAxes = Axes.Both;
 
@@ -36,7 +42,6 @@ public partial class RaceController : CompositeDrawable
 
         for (int i = 0; i < 7; i++)
         {
-            // TODO
             var character = new EnemyUma(characterTypes[i % characterTypes.Length])
             {
                 Row = i,
@@ -48,16 +53,30 @@ public partial class RaceController : CompositeDrawable
 
         AddInternal(Player);
         characters.Add(Player);
+
+        for (int i = 0; i < 8; i++)
+        {
+            AddInternal(new Sprite
+            {
+                Texture = textures.Get("start_gate"),
+                Origin = Anchor.Centre,
+                Y = i * OsuMusumePlayfield.ROW_HEIGHT - 20,
+            });
+        }
     }
 
     protected override void Update()
     {
         base.Update();
 
-        X = scrollAlgorithm.PositionAt(Math.Max(Time.Current, startTimeProvider.StartTime), Time.Current, timeRange, 100);
+        X = scrollAlgorithm.PositionAt(Math.Max(Time.Current, startTimeProvider.StartTime), Time.Current, timeRange, playfield.DrawWidth);
+        float startTimeOffset = scrollAlgorithm.PositionAt(startTimeProvider.StartTime, Time.Current, timeRange, playfield.DrawWidth);
 
         foreach (var child in InternalChildren.ToList())
         {
+            if (child is not IUma)
+                child.X = startTimeOffset - X;
+
             int row = (int)(child.Y / OsuMusumePlayfield.ROW_HEIGHT);
 
             ChangeInternalChildDepth(child, -row);
@@ -68,16 +87,21 @@ public partial class RaceController : CompositeDrawable
     {
         public int Row { init => targetPosition.Y = Y = (value + 0.5f) * OsuMusumePlayfield.ROW_HEIGHT; }
 
+        private readonly DrawableUma drawableUma;
+
         public EnemyUma(UmaType umaType)
         {
             AutoSizeAxes = Axes.Both;
             Origin = Anchor.BottomCentre;
 
-            AddInternal(new DrawableUma(umaType)
+            AddInternal(drawableUma = new DrawableUma(umaType)
             {
                 Anchor = Anchor.BottomCentre
             });
         }
+
+        [Resolved(CanBeNull = true)]
+        private ScoreProcessor scoreProcessor { get; set; }
 
         [BackgroundDependencyLoader]
         private void load(IStartTimeProvider startTimeProvider)
@@ -97,13 +121,31 @@ public partial class RaceController : CompositeDrawable
         [Resolved]
         private IList<IUma> characters { get; set; }
 
+        [Resolved]
+        private IStartTimeProvider startTimeProvider { get; set; }
+
+        [Resolved]
+        private IScrollingInfo scrollingInfo { get; set; }
+
+        private IScrollAlgorithm scrollAlgorithm => scrollingInfo.Algorithm.Value;
+        private double timeRange => scrollingInfo.TimeRange.Value;
+
         private Vector2 targetPosition;
 
         public Vector2 Velocity { get; private set; }
 
+        private float healthOffset;
+
         protected override void Update()
         {
             base.Update();
+
+            float rate = scrollAlgorithm.GetLength(Time.Current, Time.Current + 30, timeRange, 100);
+
+            drawableUma.AnimationRate = Time.Current > startTimeProvider.StartTime ? float.Clamp(rate, 0.5f, 1.5f) : 0;
+
+            if (Time.Current < startTimeProvider.StartTime)
+                return;
 
             foreach (var uma in characters)
             {
@@ -125,7 +167,14 @@ public partial class RaceController : CompositeDrawable
             targetPosition += Velocity * (float)Time.Elapsed;
             targetPosition.Y = float.Clamp(targetPosition.Y, 0, 140);
 
-            Position = Vector2.Lerp(targetPosition, Position, (float)Math.Exp(-0.03 * Time.Elapsed));
+            if (scoreProcessor != null)
+            {
+                float target = (float)(1 - scoreProcessor.Accuracy.Value) * 100f;
+
+                healthOffset = float.Lerp(target, healthOffset, (float)Math.Exp(-0.001 * Time.Elapsed));
+            }
+
+            Position = Vector2.Lerp(targetPosition + new Vector2(healthOffset, 0), Position, (float)Math.Exp(-0.03 * Time.Elapsed));
         }
 
         private void updateVelocity()
@@ -135,6 +184,12 @@ public partial class RaceController : CompositeDrawable
                 X = (Random.Shared.NextSingle() - 0.5f) * 0.03f,
                 Y = (Random.Shared.NextSingle() - 0.5f) * 0.05f,
             };
+
+            if (targetPosition.X < -100)
+                X += 0.25f;
+
+            if (targetPosition.X > 0)
+                X -= -0.25f;
 
             Scheduler.AddDelayed(updateVelocity, 1000 + Random.Shared.NextSingle() * 3000);
         }

@@ -20,7 +20,7 @@ public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<Osu
 
     private Vector2 movementSpeed => new Vector2(0, dashing ? 0.25f : 0.15f);
 
-    private readonly DrawableUma uma;
+    private readonly DrawableUma drawableUma;
 
     public float YPosition => targetPosition.Y;
 
@@ -37,16 +37,16 @@ public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<Osu
     {
         RelativeSizeAxes = Axes.Both;
 
-        AddInternal(uma = new DrawableUma(type));
+        AddInternal(drawableUma = new DrawableUma(type));
     }
 
     protected override void Update()
     {
         base.Update();
 
-        float rate = Time.Current > startTimeProvider.StartTime ? scrollAlgorithm.GetLength(Time.Current, Time.Current + 30, timeRange, 100) : 0;
+        float rate = scrollAlgorithm.GetLength(Time.Current, Time.Current + 30, timeRange, 100);
 
-        uma.AnimationRate = float.Clamp(rate, 0.5f, 1.5f);
+        drawableUma.AnimationRate = Time.Current > startTimeProvider.StartTime ? float.Clamp(rate, 0.5f, 1.5f) : 0;
 
         if (Time.Current > startTimeProvider.StartTime)
         {

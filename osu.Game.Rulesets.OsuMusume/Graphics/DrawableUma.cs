@@ -70,6 +70,8 @@ public partial class DrawableUma : CompositeDrawable
             runAnimation = textures.GetAnimation(type, CharacterState.Running),
         ];
 
+        runAnimation.GotoFrame(1);
+
         runAnimation.GotoFrame(Random.Shared.Next(runAnimation.FrameCount));
 
         foreach (var c in InternalChildren)
