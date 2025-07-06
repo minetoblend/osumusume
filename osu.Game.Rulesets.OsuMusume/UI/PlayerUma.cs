@@ -11,14 +11,18 @@ using osuTK;
 
 namespace osu.Game.Rulesets.OsuMusume.UI;
 
-public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<OsuMusumeAction>
+public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<OsuMusumeAction>
 {
-    private Vector2 position;
+    private Vector2 targetPosition;
     private Vector2 velocity;
 
-    private readonly Vector2 movementSpeed = new Vector2(0, 0.1f);
+    private bool dashing;
 
-    private readonly DrawableCharacter character;
+    private Vector2 movementSpeed => new Vector2(0, dashing ? 0.25f : 0.15f);
+
+    private readonly DrawableUma uma;
+
+    public float YPosition => targetPosition.Y;
 
     [Resolved]
     private IScrollingInfo scrollingInfo { get; set; }
@@ -29,11 +33,11 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
     private IScrollAlgorithm scrollAlgorithm => scrollingInfo.Algorithm.Value;
     private double timeRange => scrollingInfo.TimeRange.Value;
 
-    public PlayerCharacter(Character character)
+    public PlayerUma(UmaType type)
     {
         RelativeSizeAxes = Axes.Both;
 
-        AddInternal(this.character = new DrawableCharacter(Character.SpecialWeek));
+        AddInternal(uma = new DrawableUma(type));
     }
 
     protected override void Update()
@@ -42,22 +46,26 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
         float rate = Time.Current > startTimeProvider.StartTime ? scrollAlgorithm.GetLength(Time.Current, Time.Current + 30, timeRange, 100) : 0;
 
-        character.AnimationRate = float.Clamp(rate, 0.5f, 1.5f);
+        uma.AnimationRate = float.Clamp(rate, 0.5f, 1.5f);
 
-        position = Vector2.Clamp(position + velocity * movementSpeed * (float)Time.Elapsed, Vector2.Zero, new Vector2(64, 130));
+        if (Time.Current > startTimeProvider.StartTime)
+        {
+            targetPosition = Vector2.Clamp(targetPosition + velocity * movementSpeed * (float)Time.Elapsed, Vector2.Zero, new Vector2(64, 130));
 
-        character.Position = Vector2.Lerp(position, character.Position, (float)Math.Exp(-0.02f * Time.Elapsed));
+            Position = Vector2.Lerp(targetPosition, Position, (float)Math.Exp(-0.03f * Time.Elapsed));
+        }
     }
 
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
     {
+        if (e.Action == OsuMusumeAction.Dash)
+            dashing = true;
+
         velocity += e.Action switch
         {
             OsuMusumeAction.Up => new Vector2(0, -1),
             OsuMusumeAction.Down => new Vector2(0, 1),
-            OsuMusumeAction.Left => new Vector2(-1, 0),
-            OsuMusumeAction.Right => new Vector2(1, 0),
-            _ => throw new ArgumentOutOfRangeException()
+            _ => new Vector2(),
         };
 
         return false;
@@ -65,13 +73,14 @@ public partial class PlayerCharacter : CompositeDrawable, IKeyBindingHandler<Osu
 
     public void OnReleased(KeyBindingReleaseEvent<OsuMusumeAction> e)
     {
+        if (e.Action == OsuMusumeAction.Dash)
+            dashing = false;
+
         velocity -= e.Action switch
         {
             OsuMusumeAction.Up => new Vector2(0, -1),
             OsuMusumeAction.Down => new Vector2(0, 1),
-            OsuMusumeAction.Left => new Vector2(-1, 0),
-            OsuMusumeAction.Right => new Vector2(1, 0),
-            _ => throw new ArgumentOutOfRangeException()
+            _ => new Vector2(),
         };
     }
 }

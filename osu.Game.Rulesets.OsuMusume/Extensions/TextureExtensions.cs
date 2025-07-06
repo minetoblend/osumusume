@@ -10,8 +10,8 @@ namespace osu.Game.Rulesets.OsuMusume.Extensions;
 
 public static class TextureExtensions
 {
-    public static DrawableAnimation GetAnimation(this TextureStore store, Character character, CharacterState state, double frameDuration = 80) =>
-        store.GetAnimation(character.GetDescription(), state.GetDescription(), frameDuration);
+    public static DrawableAnimation GetAnimation(this TextureStore store, UmaType umaType, CharacterState state, double frameDuration = 80) =>
+        store.GetAnimation(umaType.GetDescription(), state.GetDescription(), frameDuration);
 
     public static DrawableAnimation GetAnimation(this TextureStore store, string name, [CanBeNull] string type = null, double frameDuration = 80)
     {

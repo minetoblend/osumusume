@@ -1,7 +1,6 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using System;
 using System.Collections.Generic;
 using osu.Framework.Graphics;
 using osu.Framework.Input.Bindings;
@@ -30,10 +29,10 @@ namespace osu.Game.Rulesets.OsuMusume
             switch (type)
             {
                 case ModType.Automation:
-                    return new[] { new OsuMusumeModAutoplay() };
+                    return [new OsuMusumeModAutoplay()];
 
                 default:
-                    return Array.Empty<Mod>();
+                    return [];
             }
         }
 
@@ -42,9 +41,10 @@ namespace osu.Game.Rulesets.OsuMusume
         public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) => new[]
         {
             new KeyBinding(InputKey.W, OsuMusumeAction.Up),
-            new KeyBinding(InputKey.A, OsuMusumeAction.Left),
+            new KeyBinding(InputKey.A, OsuMusumeAction.Up),
+            new KeyBinding(InputKey.D, OsuMusumeAction.Down),
             new KeyBinding(InputKey.S, OsuMusumeAction.Down),
-            new KeyBinding(InputKey.D, OsuMusumeAction.Right),
+            new KeyBinding(InputKey.Shift, OsuMusumeAction.Dash),
         };
 
         public override Drawable CreateIcon() => new OsuMusumeRulesetIcon(this);

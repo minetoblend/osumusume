@@ -10,6 +10,7 @@ using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
 using osu.Game.Rulesets.OsuMusume.Graphics;
 using osu.Game.Rulesets.UI.Scrolling;
+using osuTK;
 
 namespace osu.Game.Rulesets.OsuMusume.UI
 {
@@ -49,6 +50,39 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 Height = 140,
             });
 
+            content.AddRange([
+                new EndlessScrollingSprite
+                {
+                    Texture = textures.Get("dirt"),
+                    RelativeSizeAxes = Axes.X,
+                    Height = 20,
+                    Y = 140,
+                    ScrollSpeed = 1.05f,
+                    Depth = 1,
+                },
+                new EndlessScrollingSprite
+                {
+                    Texture = textures.Get("dirt"),
+                    RelativeSizeAxes = Axes.X,
+                    Height = 20,
+                    ScrollSpeed = 0.9f,
+                    Depth = 1,
+                    Y = 2,
+                    Origin = Anchor.BottomLeft,
+                    Scale = new Vector2(1, 0.5f)
+                },
+                new EndlessScrollingSprite
+                {
+                    Texture = textures.Get("barrier_top"),
+                    RelativeSizeAxes = Axes.X,
+                    Height = 12,
+                    Anchor = Anchor.TopLeft,
+                    Origin = Anchor.BottomLeft,
+                    ScrollSpeed = 0.9f,
+                    Y = 1,
+                },
+            ]);
+
             for (int i = 0; i < 7; i++)
             {
                 content.Add(new EndlessScrollingSprite
@@ -61,6 +95,10 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 });
             }
 
+            var raceController = new RaceController();
+
+            dependencies.CacheAs(raceController.Player);
+
             content.Add(new Container
             {
                 RelativeSizeAxes = Axes.Both,
@@ -69,9 +107,19 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 [
                     ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
                     HitObjectContainer,
-                    new HitArea(),
-                    new PlayerCharacter(Character.SpecialWeek),
+                    raceController,
                 ]
+            });
+
+            content.Add(new EndlessScrollingSprite
+            {
+                Texture = textures.Get("barrier_bottom"),
+                RelativeSizeAxes = Axes.X,
+                Height = 12,
+                Anchor = Anchor.BottomLeft,
+                Origin = Anchor.BottomLeft,
+                Y = 1,
+                ScrollSpeed = 1.05f,
             });
         }
     }

@@ -28,8 +28,8 @@ namespace osu.Game.Rulesets.OsuMusume.UI
             : base(ruleset, beatmap, mods)
         {
             Direction.Value = ScrollingDirection.Left;
-            TimeRange.Value = 5000;
-            VisualisationMethod = ScrollVisualisationMethod.Overlapping;
+            TimeRange.Value = 1500;
+            VisualisationMethod = ScrollVisualisationMethod.Sequential;
 
             if (beatmap.HitObjects.Count > 0)
             {
@@ -56,7 +56,12 @@ namespace osu.Game.Rulesets.OsuMusume.UI
 
         public override PlayfieldAdjustmentContainer CreatePlayfieldAdjustmentContainer() => new OsuMusumePlayfieldAdjustmentContainer();
 
-        public override DrawableHitObject<OsuMusumeHitObject> CreateDrawableRepresentation(OsuMusumeHitObject h) => new DrawableOsuMusumeHitObject(h);
+        public override DrawableHitObject<OsuMusumeHitObject> CreateDrawableRepresentation(OsuMusumeHitObject h) => h switch
+        {
+            Carrot carrot => new DrawableCarrot(carrot),
+            Slide slide => new DrawableSlide(slide),
+            _ => null,
+        };
 
         protected override PassThroughInputManager CreateInputManager() => new OsuMusumeInputManager(Ruleset?.RulesetInfo);
     }

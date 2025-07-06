@@ -13,9 +13,9 @@ using osuTK;
 
 namespace osu.Game.Rulesets.OsuMusume.Graphics;
 
-public partial class DrawableCharacter : CompositeDrawable
+public partial class DrawableUma : CompositeDrawable
 {
-    private readonly Character character;
+    private readonly UmaType type;
 
     private readonly Bindable<CharacterState> state = new Bindable<CharacterState>();
 
@@ -44,13 +44,13 @@ public partial class DrawableCharacter : CompositeDrawable
     [Resolved]
     private IScrollingInfo scrollingInfo { get; set; }
 
-    public DrawableCharacter(Character character)
+    public DrawableUma(UmaType type)
     {
-        this.character = character;
+        this.type = type;
 
         Size = new Vector2(48);
         OriginPosition = new Vector2(24, 39);
-        Name = character.ToString();
+        Name = type.ToString();
     }
 
     private DrawableAnimation runAnimation;
@@ -67,8 +67,10 @@ public partial class DrawableCharacter : CompositeDrawable
 
         InternalChildren =
         [
-            runAnimation = textures.GetAnimation(character, CharacterState.Running),
+            runAnimation = textures.GetAnimation(type, CharacterState.Running),
         ];
+
+        runAnimation.GotoFrame(Random.Shared.Next(runAnimation.FrameCount));
 
         foreach (var c in InternalChildren)
             c.Hide();
@@ -98,8 +100,20 @@ public enum CharacterState
     Running,
 }
 
-public enum Character
+public enum UmaType
 {
     [Description("special_week")]
     SpecialWeek,
+
+    [Description("tokai_teio")]
+    TokaiTeio,
+
+    [Description("mejiro_mcqueen")]
+    MejiroMcqueen,
+
+    [Description("seiun_sky")]
+    SeiunSky,
+
+    [Description("gold_ship")]
+    GoldShip,
 }

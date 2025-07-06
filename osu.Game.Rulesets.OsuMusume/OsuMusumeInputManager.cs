@@ -20,13 +20,10 @@ namespace osu.Game.Rulesets.OsuMusume
         [Description("Move Up")]
         Up,
 
-        [Description("Move Left")]
-        Left,
-
         [Description("Move Down")]
         Down,
 
-        [Description("Move Right")]
-        Right,
+        [Description("Dash")]
+        Dash,
     }
 }
