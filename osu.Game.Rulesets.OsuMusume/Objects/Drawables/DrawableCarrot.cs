@@ -1,22 +1,29 @@
-﻿using osu.Framework.Allocation;
+﻿using System;
+using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
+using osu.Framework.Input.Bindings;
+using osu.Framework.Input.Events;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.OsuMusume.UI;
+using osu.Game.Rulesets.Scoring;
 using osuTK;
 using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 
-public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>
+public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>, IKeyBindingHandler<OsuMusumeAction>
 {
     private readonly Container content;
 
     [Resolved]
     private OsuMusumePlayfield playfield { get; set; }
+
+    [Resolved]
+    private PlayerUma player { get; set; }
 
     public DrawableCarrot(Carrot hitObject)
         : base(hitObject)
@@ -24,11 +31,12 @@ public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>
         Size = new Vector2(24);
         Origin = Anchor.BottomCentre;
 
-        Y = (hitObject.Row + 0.5f) * OsuMusumePlayfield.ROW_HEIGHT;
+        Y = hitObject.Row * OsuMusumePlayfield.ROW_HEIGHT;
 
         AddInternal(content = new Container
         {
             RelativeSizeAxes = Axes.Both,
+            Y = OsuMusumePlayfield.ROW_HEIGHT / 2
         });
     }
 
@@ -69,6 +77,9 @@ public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>
             {
                 RelativeSizeAxes = Axes.Both,
                 StartTime = HitObject.StartTime,
+                Anchor = Anchor.Centre,
+                Origin = Anchor.Centre,
+                Scale = new Vector2(1.2f),
                 Children =
                 [
                     carrot = new Sprite
@@ -86,9 +97,23 @@ public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>
 
     protected override void CheckForResult(bool userTriggered, double timeOffset)
     {
-        if (timeOffset >= 0)
-            // todo: implement judgement logic
-            ApplyMaxResult();
+        if (!userTriggered)
+        {
+            if (!HitObject.HitWindows.CanBeHit(timeOffset))
+                ApplyMinResult();
+
+            return;
+        }
+
+        if (Math.Abs(player.Y - Y) > 25)
+            return;
+
+        var result = HitObject.HitWindows.ResultFor(timeOffset);
+
+        if (result == HitResult.None)
+            return;
+
+        ApplyResult(result);
     }
 
     protected override void UpdateHitStateTransforms(ArmedState state)
@@ -114,5 +139,20 @@ public partial class DrawableCarrot : DrawableOsuMusumeHitObject<Carrot>
         }
 
         this.Delay(1000).FadeOut().Expire();
+    }
+
+    public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
+    {
+        if (Judged)
+            return false;
+
+        if (e.Action == OsuMusumeAction.Hit1 || e.Action == OsuMusumeAction.Hit2)
+            return UpdateResult(true);
+
+        return false;
+    }
+
+    public void OnReleased(KeyBindingReleaseEvent<OsuMusumeAction> e)
+    {
     }
 }

@@ -2,9 +2,13 @@
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Textures;
 using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
 using osu.Game.Rulesets.OsuMusume.Graphics;
+using osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 using osu.Game.Rulesets.UI.Scrolling;
 using osu.Game.Rulesets.UI.Scrolling.Algorithms;
 using osuTK;
@@ -33,11 +37,56 @@ public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<Osu
     private IScrollAlgorithm scrollAlgorithm => scrollingInfo.Algorithm.Value;
     private double timeRange => scrollingInfo.TimeRange.Value;
 
+    private readonly Container content;
+    private readonly Box rowHighlight;
+
     public PlayerUma(UmaType type)
     {
         RelativeSizeAxes = Axes.Both;
 
-        AddInternal(drawableUma = new DrawableUma(type));
+        InternalChildren =
+        [
+            rowHighlight = new Box
+            {
+                Width = 10000,
+                Height = OsuMusumePlayfield.ROW_HEIGHT,
+                Anchor = Anchor.TopCentre,
+                Origin = Anchor.Centre,
+                Alpha = 0.1f,
+                Blending = BlendingParameters.Additive,
+            },
+            content = new Container
+            {
+                RelativeSizeAxes = Axes.Both,
+                Children =
+                [
+                    drawableUma = new DrawableUma(type)
+                ],
+            }
+        ];
+    }
+
+    [BackgroundDependencyLoader]
+    private void load(TextureStore textures)
+    {
+        content.Add(new FloatingContainer
+        {
+            new Sprite
+            {
+                Texture = textures.Get("player_marker"),
+                Origin = Anchor.BottomCentre,
+                Y = -35,
+            }
+        });
+    }
+
+    [Resolved]
+    private OsuMusumePlayfield playfield { get; set; }
+
+    protected override void LoadComplete()
+    {
+        base.LoadComplete();
+        playfield.BackgroundLayer.Add(rowHighlight.CreateProxy());
     }
 
     protected override void Update()
@@ -56,31 +105,69 @@ public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<Osu
         }
     }
 
+    private void jump()
+    {
+        content.FinishTransforms();
+        content.MoveToY(-30, 200, Easing.OutCubic)
+               .Then()
+               .MoveToY(0, 400, Easing.InCubic);
+    }
+
+    private void endJump()
+    {
+        content.ClearTransforms();
+        content.MoveToY(0, 200, Easing.In);
+    }
+
     public bool OnPressed(KeyBindingPressEvent<OsuMusumeAction> e)
     {
-        if (e.Action == OsuMusumeAction.Dash)
-            dashing = true;
-
-        velocity += e.Action switch
+        switch (e.Action)
         {
-            OsuMusumeAction.Up => new Vector2(0, -1),
-            OsuMusumeAction.Down => new Vector2(0, 1),
-            _ => new Vector2(),
-        };
+            case OsuMusumeAction.Dash:
+                dashing = true;
+                break;
+
+            case OsuMusumeAction.Down:
+                velocity.Y += 1;
+                break;
+
+            case OsuMusumeAction.Up:
+                velocity.Y -= 1;
+                break;
+
+            case OsuMusumeAction.Jump:
+                jump();
+                break;
+
+            case OsuMusumeAction.Hit1:
+            case OsuMusumeAction.Hit2:
+                rowHighlight.FadeTo(0.5f)
+                            .FadeTo(0.1f, 300, Easing.OutCubic);
+                break;
+        }
 
         return false;
     }
 
     public void OnReleased(KeyBindingReleaseEvent<OsuMusumeAction> e)
     {
-        if (e.Action == OsuMusumeAction.Dash)
-            dashing = false;
-
-        velocity -= e.Action switch
+        switch (e.Action)
         {
-            OsuMusumeAction.Up => new Vector2(0, -1),
-            OsuMusumeAction.Down => new Vector2(0, 1),
-            _ => new Vector2(),
-        };
+            case OsuMusumeAction.Dash:
+                dashing = false;
+                break;
+
+            case OsuMusumeAction.Down:
+                velocity.Y -= 1;
+                break;
+
+            case OsuMusumeAction.Up:
+                velocity.Y += 1;
+                break;
+
+            case OsuMusumeAction.Jump:
+                endJump();
+                break;
+        }
     }
 }

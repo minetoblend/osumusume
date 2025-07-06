@@ -25,7 +25,6 @@ namespace osu.Game.Rulesets.OsuMusume.Replays
                 Frames.Add(new OsuMusumeReplayFrame
                 {
                     Time = hitObject.StartTime
-                    // todo: add required inputs and extra frames.
                 });
             }
         }

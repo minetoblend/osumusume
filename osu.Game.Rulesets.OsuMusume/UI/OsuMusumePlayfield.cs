@@ -26,6 +26,8 @@ namespace osu.Game.Rulesets.OsuMusume.UI
 
         public Container ShadowLayer { get; private set; }
 
+        public Container BackgroundLayer { get; private set; }
+
         [BackgroundDependencyLoader]
         private void load(IRenderer renderer, GameHost host, TextureStore parentStore)
         {
@@ -106,6 +108,7 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 Children =
                 [
                     ShadowLayer = new Container { RelativeSizeAxes = Axes.Both },
+                    BackgroundLayer = new Container { RelativeSizeAxes = Axes.Both },
                     HitObjectContainer,
                     raceController,
                 ]

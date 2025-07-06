@@ -10,7 +10,9 @@ using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.UI;
 using osu.Game.Rulesets.OsuMusume.Beatmaps;
 using osu.Game.Rulesets.OsuMusume.Mods;
+using osu.Game.Rulesets.OsuMusume.Replays;
 using osu.Game.Rulesets.OsuMusume.UI;
+using osu.Game.Rulesets.Replays.Types;
 
 namespace osu.Game.Rulesets.OsuMusume
 {
@@ -45,11 +47,17 @@ namespace osu.Game.Rulesets.OsuMusume
             new KeyBinding(InputKey.D, OsuMusumeAction.Down),
             new KeyBinding(InputKey.S, OsuMusumeAction.Down),
             new KeyBinding(InputKey.Shift, OsuMusumeAction.Dash),
+            new KeyBinding(InputKey.Space, OsuMusumeAction.Jump),
+            new KeyBinding(InputKey.J, OsuMusumeAction.Hit1),
+            new KeyBinding(InputKey.K, OsuMusumeAction.Hit2),
+            new KeyBinding(InputKey.L, OsuMusumeAction.Jump),
         };
 
         public override Drawable CreateIcon() => new OsuMusumeRulesetIcon(this);
 
         // Leave this line intact. It will bake the correct version into the ruleset on each build/release.
         public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+
+        public override IConvertibleReplayFrame CreateConvertibleReplayFrame() => new OsuMusumeReplayFrame();
     }
 }

@@ -16,13 +16,14 @@ using osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 using osu.Game.Rulesets.OsuMusume.Replays;
 using osu.Game.Rulesets.UI;
 using osu.Game.Rulesets.UI.Scrolling;
+using osu.Game.Scoring;
 
 namespace osu.Game.Rulesets.OsuMusume.UI
 {
     [Cached]
     public partial class DrawableOsuMusumeRuleset : DrawableScrollingRuleset<OsuMusumeHitObject>, IStartTimeProvider
     {
-        public double StartTime { get; }
+        public double StartTime { get; private set; }
 
         public DrawableOsuMusumeRuleset(OsuMusumeRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null)
             : base(ruleset, beatmap, mods)
@@ -30,11 +31,16 @@ namespace osu.Game.Rulesets.OsuMusume.UI
             Direction.Value = ScrollingDirection.Left;
             TimeRange.Value = 1500;
             VisualisationMethod = ScrollVisualisationMethod.Sequential;
+        }
 
-            if (beatmap.HitObjects.Count > 0)
+        [BackgroundDependencyLoader]
+        private void load()
+        {
+            if (Beatmap.HitObjects.Count > 0)
             {
-                StartTime = beatmap.HitObjects[0].StartTime;
+                StartTime = Beatmap.HitObjects[0].StartTime;
 
+                ControlPoints.Clear();
                 ControlPoints.AddRange([
                     new MultiplierControlPoint
                     {
@@ -43,8 +49,8 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                     },
                     new MultiplierControlPoint
                     {
-                        Time = beatmap.HitObjects[0].StartTime,
-                        Velocity = 1,
+                        Time = Beatmap.HitObjects[0].StartTime,
+                        Velocity = 1.2f,
                     }
                 ]);
             }
@@ -60,9 +66,12 @@ namespace osu.Game.Rulesets.OsuMusume.UI
         {
             Carrot carrot => new DrawableCarrot(carrot),
             Slide slide => new DrawableSlide(slide),
+            Hurdle hurdle => new DrawableHurdle(hurdle),
             _ => null,
         };
 
         protected override PassThroughInputManager CreateInputManager() => new OsuMusumeInputManager(Ruleset?.RulesetInfo);
+
+        protected override ReplayRecorder CreateReplayRecorder(Score score) => new OsuMusumeReplayRecorder(score);
     }
 }

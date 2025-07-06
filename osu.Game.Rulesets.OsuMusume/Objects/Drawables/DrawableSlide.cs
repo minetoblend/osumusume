@@ -3,12 +3,16 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
+using osu.Game.Rulesets.OsuMusume.UI;
 using osu.Game.Rulesets.Scoring;
 
 namespace osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 
 public partial class DrawableSlide : DrawableOsuMusumeHitObject<Slide>
 {
+    [Resolved]
+    private OsuMusumePlayfield playfield { get; set; }
+
     public DrawableSlide(Slide hitObject)
         : base(hitObject)
     {
@@ -35,6 +39,13 @@ public partial class DrawableSlide : DrawableOsuMusumeHitObject<Slide>
         {
             RelativePositionAxes = Axes.Both,
         });
+    }
+
+    protected override void LoadComplete()
+    {
+        base.LoadComplete();
+
+        playfield.BackgroundLayer.Add(arrowContainer.CreateProxy());
     }
 
     protected override void AddNestedHitObject(DrawableHitObject hitObject)

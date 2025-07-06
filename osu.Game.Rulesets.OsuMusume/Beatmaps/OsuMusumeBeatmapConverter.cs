@@ -55,11 +55,22 @@ namespace osu.Game.Rulesets.OsuMusume.Beatmaps
                 yield break;
             }
 
+            if (original is IHasCombo combo && combo.NewCombo)
+            {
+                yield return new Hurdle
+                {
+                    Samples = original.Samples,
+                    StartTime = original.StartTime,
+                };
+
+                yield break;
+            }
+
             yield return new Carrot
             {
                 Samples = original.Samples,
                 StartTime = original.StartTime,
-                Row = original is IHasYPosition h ? (int)(h.Y / 384 * 7) : nextRow(original.StartTime),
+                Row = original is IHasYPosition h ? (h.Y / 384f * 7) : nextRow(original.StartTime),
             };
         }
 

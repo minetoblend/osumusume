@@ -6,7 +6,9 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
+using osu.Framework.Utils;
 using osu.Game.Rulesets.OsuMusume.Graphics;
+using osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.UI.Scrolling;
 using osu.Game.Rulesets.UI.Scrolling.Algorithms;
@@ -19,6 +21,7 @@ public partial class RaceController : CompositeDrawable
     [Cached(typeof(IList<IUma>))]
     private readonly List<IUma> characters = new List<IUma>();
 
+    [Cached]
     public readonly PlayerUma Player = new PlayerUma(UmaType.SpecialWeek);
 
     [Resolved]
@@ -114,8 +117,6 @@ public partial class RaceController : CompositeDrawable
             base.LoadComplete();
 
             targetPosition = Position;
-
-            X = (Random.Shared.NextSingle() - 0.5f) * 10f;
         }
 
         [Resolved]
@@ -126,6 +127,12 @@ public partial class RaceController : CompositeDrawable
 
         [Resolved]
         private IScrollingInfo scrollingInfo { get; set; }
+
+        [Resolved]
+        private OsuMusumePlayfield playfield { get; set; }
+
+        [Resolved]
+        private PlayerUma player { get; set; }
 
         private IScrollAlgorithm scrollAlgorithm => scrollingInfo.Algorithm.Value;
         private double timeRange => scrollingInfo.TimeRange.Value;
@@ -156,7 +163,7 @@ public partial class RaceController : CompositeDrawable
 
                 if (distance < 15 && distance > 0)
                 {
-                    var direction = (targetPosition - uma.Position).Normalized();
+                    var direction = (Position - uma.Position).Normalized();
 
                     float factor = (float)Time.Elapsed * 0.04f * (Random.Shared.NextSingle() * 0.5f + 0.5f);
 
@@ -175,6 +182,27 @@ public partial class RaceController : CompositeDrawable
             }
 
             Position = Vector2.Lerp(targetPosition + new Vector2(healthOffset, 0), Position, (float)Math.Exp(-0.03 * Time.Elapsed));
+
+            foreach (var (_, hitObject) in playfield.HitObjectContainer.AliveEntries)
+            {
+                if (hitObject is DrawableHurdle)
+                {
+                    if (hitObject.X - X < 10 && hitObject.X - X > 0 && !isJumping)
+                        jump();
+                }
+            }
+
+            Alpha = Interpolation.ValueAt(Vector2.Distance(Position, player.Position), 0.4f, 1f, 20, 60);
+        }
+
+        private bool isJumping => drawableUma.Transforms.Any();
+
+        private void jump()
+        {
+            drawableUma.FinishTransforms();
+            drawableUma.MoveToY(-30, 200, Easing.OutCubic)
+                       .Then()
+                       .MoveToY(0, 200, Easing.InCubic);
         }
 
         private void updateVelocity()
@@ -190,6 +218,9 @@ public partial class RaceController : CompositeDrawable
 
             if (targetPosition.X > 0)
                 X -= -0.25f;
+
+            if ((targetPosition.Y < 10 && Velocity.Y < 0) || (targetPosition.Y > 130 && Velocity.Y > 0))
+                Velocity = Velocity with { Y = -Velocity.Y };
 
             Scheduler.AddDelayed(updateVelocity, 1000 + Random.Shared.NextSingle() * 3000);
         }

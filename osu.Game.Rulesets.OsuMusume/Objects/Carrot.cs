@@ -5,11 +5,11 @@ namespace osu.Game.Rulesets.OsuMusume.Objects;
 
 public class Carrot : OsuMusumeHitObject
 {
-    private HitObjectProperty<int> row = new HitObjectProperty<int>();
+    private HitObjectProperty<float> row = new HitObjectProperty<float>();
 
-    public Bindable<int> RowBindable => row.Bindable;
+    public Bindable<float> RowBindable => row.Bindable;
 
-    public int Row
+    public float Row
     {
         get => row.Value;
         set => row.Value = value;
