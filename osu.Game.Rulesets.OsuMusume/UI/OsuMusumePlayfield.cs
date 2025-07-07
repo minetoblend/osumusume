@@ -8,7 +8,10 @@ using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
+using osu.Game.Rulesets.Judgements;
+using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.OsuMusume.Graphics;
+using osu.Game.Rulesets.UI;
 using osu.Game.Rulesets.UI.Scrolling;
 using osuTK;
 
@@ -23,6 +26,8 @@ namespace osu.Game.Rulesets.OsuMusume.UI
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) =>
             dependencies = new DependencyContainer(base.CreateChildDependencies(parent));
+
+        private JudgementContainer<DrawableOsuMusumeJudgement> judgements;
 
         public Container ShadowLayer { get; private set; }
 
@@ -45,12 +50,19 @@ namespace osu.Game.Rulesets.OsuMusume.UI
             Container content;
             Container offsetContent;
 
-            AddInternal(content = new Container
-            {
-                RelativeSizeAxes = Axes.X,
-                Y = 100,
-                Height = 140,
-            });
+            AddRangeInternal([
+                content = new Container
+                {
+                    RelativeSizeAxes = Axes.X,
+                    Y = 100,
+                    Height = 140,
+                },
+                judgements = new JudgementContainer<DrawableOsuMusumeJudgement>
+                {
+                    RelativeSizeAxes = Axes.X,
+                    Height = 100,
+                },
+            ]);
 
             content.AddRange([
                 new EndlessScrollingSprite
@@ -124,6 +136,29 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                 Y = 1,
                 ScrollSpeed = 1.05f,
             });
+        }
+
+        protected override void LoadComplete()
+        {
+            base.LoadComplete();
+
+            NewResult += onNewResult;
+        }
+
+        private void onNewResult(DrawableHitObject judgedObject, JudgementResult result)
+        {
+            if (!judgedObject.DisplayResult || !DisplayJudgements.Value)
+                return;
+
+            judgements.Clear(false);
+            judgements.Add(new DrawableOsuMusumeJudgement().With(j => j.Apply(result, judgedObject))!);
+        }
+
+        protected override void Dispose(bool isDisposing)
+        {
+            NewResult -= onNewResult;
+
+            base.Dispose(isDisposing);
         }
     }
 }

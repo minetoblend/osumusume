@@ -84,6 +84,8 @@ public partial class DrawableSlideArrow : DrawableOsuMusumeHitObject<SlideArrow>
     [Resolved]
     private PlayerUma player { get; set; }
 
+    public override bool DisplayResult => false;
+
     protected override void CheckForResult(bool userTriggered, double timeOffset)
     {
         if (timeOffset >= 0)
