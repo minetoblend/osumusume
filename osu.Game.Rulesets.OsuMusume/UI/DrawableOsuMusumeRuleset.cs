@@ -28,9 +28,6 @@ namespace osu.Game.Rulesets.OsuMusume.UI
         public DrawableOsuMusumeRuleset(OsuMusumeRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null)
             : base(ruleset, beatmap, mods)
         {
-            Direction.Value = ScrollingDirection.Left;
-            TimeRange.Value = 1500;
-            VisualisationMethod = ScrollVisualisationMethod.Sequential;
         }
 
         [BackgroundDependencyLoader]
@@ -49,11 +46,27 @@ namespace osu.Game.Rulesets.OsuMusume.UI
                     },
                     new MultiplierControlPoint
                     {
-                        Time = Beatmap.HitObjects[0].StartTime,
-                        Velocity = 1.2f,
+                        Time = StartTime,
+                        Velocity = 1f,
                     }
                 ]);
+
+                foreach (var effectPoint in Beatmap.ControlPointInfo.EffectPoints)
+                {
+                    if (effectPoint.Time < StartTime)
+                        continue;
+
+                    ControlPoints.Add(new MultiplierControlPoint
+                    {
+                        Time = effectPoint.Time,
+                        Velocity = effectPoint.KiaiMode ? 1.5f : 1
+                    });
+                }
             }
+
+            Direction.Value = ScrollingDirection.Left;
+            TimeRange.Value = 1500;
+            VisualisationMethod = ScrollVisualisationMethod.Sequential;
         }
 
         protected override Playfield CreatePlayfield() => new OsuMusumePlayfield();
