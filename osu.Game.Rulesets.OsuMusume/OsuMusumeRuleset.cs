@@ -33,6 +33,9 @@ namespace osu.Game.Rulesets.OsuMusume
                 case ModType.Automation:
                     return [new OsuMusumeModAutoplay()];
 
+                case ModType.DifficultyReduction:
+                    return [new OsuMususmeModNofail()];
+
                 default:
                     return [];
             }
