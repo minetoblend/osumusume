@@ -101,7 +101,7 @@ public partial class PlayerUma : CompositeDrawable, IUma, IKeyBindingHandler<Osu
         {
             targetPosition = Vector2.Clamp(targetPosition + velocity * movementSpeed * (float)Time.Elapsed, Vector2.Zero, new Vector2(64, 130));
 
-            Position = Vector2.Lerp(targetPosition, Position, (float)Math.Exp(-0.03f * Time.Elapsed));
+            Position = Vector2.Lerp(targetPosition, Position, (float)Math.Exp(-0.05f * Time.Elapsed));
         }
     }
 
