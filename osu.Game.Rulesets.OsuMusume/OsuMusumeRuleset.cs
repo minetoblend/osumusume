@@ -18,7 +18,7 @@ namespace osu.Game.Rulesets.OsuMusume
 {
     public class OsuMusumeRuleset : Ruleset
     {
-        public override string Description => "osu!musume";
+        public override string Description => "osumusume";
 
         public override DrawableRuleset CreateDrawableRulesetWith(IBeatmap beatmap, IReadOnlyList<Mod> mods = null) => new DrawableOsuMusumeRuleset(this, beatmap, mods);
 
