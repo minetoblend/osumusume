@@ -6,7 +6,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Utils;
 using osu.Game.Rulesets.OsuMusume.Graphics;
 using osu.Game.Rulesets.OsuMusume.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
@@ -43,7 +42,7 @@ public partial class RaceController : CompositeDrawable
 
         var characterTypes = Enum.GetValues<UmaType>();
 
-        for (int i = 0; i < 7; i++)
+        for (int i = 1; i < characterTypes.Length; i++)
         {
             var character = new EnemyUma(characterTypes[i % characterTypes.Length])
             {
@@ -191,8 +190,6 @@ public partial class RaceController : CompositeDrawable
                         jump();
                 }
             }
-
-            Alpha = Interpolation.ValueAt(Vector2.Distance(Position, player.Position), 0.4f, 1f, 20, 60);
         }
 
         private bool isJumping => drawableUma.Transforms.Any();
